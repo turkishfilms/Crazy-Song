@@ -1,24 +1,10 @@
-let points = [],
-  newPoints = [],
-  _numberOfAgents = 7,
-  numOfPoints = 8,
-  count = 0,
-  delay = 150,
-  speed = 9,
-  colSpeed = 5,
-  starting = true,
-  col = {
-    r: 0,
-    g: 0,
-    b: 0
-  },
-  newCol = {
-    r: 0,
-    g: 0,
-    b: 0
-  }
-
-var agents = []
+let paused = 0, 
+    cellSize =50,
+    _numberOfAgents = 7,
+    count = 0,
+    starting = true,
+    pointClouds = [],
+    agents = []
 
 function mousePressed() {
   agents = points = []
@@ -35,29 +21,19 @@ function keyPressed() {
   if (key == 'r') resetSim()
 }
 
-function makePoints() {
-  points = newPoints.slice()
-  col.r = newCol.r;
-  col.g = newCol.g;
-  col.b = newCol.b
-  newPoints = []
 
-  for (let i = 0; i < numOfPoints; i++) {
-    newPoints.push({
-      x: random(width),
-      y: random(height)
-    })
-  }
-  newCol.r = random(255)
-  newCol.g = random(255)
-  newCol.b = random(255)
-}
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
   background(20)
   for (k = 0; k < _numberOfAgents; k++) agents.push(new Agent(true))
   socket.on('send', (reset) => resetSim())
+  	for(let i = 0; i < floor(width/cellSize); i++){
+		for(let j = 0; j < floor(height/cellSize); j++){
+			pointClouds.push(new PointCloud({delay:10,speed:2,pointCount:5,pointRange:{wmin:i*cellSize,wmax:(i+1)*cellSize,hmin:j*cellSize,hmax:(j+1)*cellSize}}))
+		}
+	}
+
 }
 
 function resetSim() {
@@ -69,39 +45,31 @@ function resetSim() {
   // agents.push(new Agent(true, 'Janell'))
 }
 
+const initPointClouds = () =>{
+	pointClouds.forEach((pointCloud)=>{
+		pointCloud.nextTransition(pointCloud.newPoints,pointCloud.newCol,
+									pointCloud.pointRange,pointCloud.colRange)
+		pointCloud.nextTransition(pointCloud.newPoints,pointCloud.newCol,
+									pointCloud.pointRange,pointCloud.colRange)
+	})
+}
 function draw() {
   frameRate(20);
-  pointClouds.forEach((pointCloud)=>{
+  
+  if (starting) {
+    initPointClouds()
+    background(0)
+    starting = false
+  }
+
+ pointClouds.forEach((pointCloud)=>{
 		if(frameCount % pointCloud.delay == 0){
 			pointCloud.nextTransition(pointCloud.newPoints,pointCloud.newCol,
 											pointCloud.pointRange,pointCloud.colRange)
 			}
 		pointCloud.show()
 	})
-  if (starting) {
-    makePoints()
-    background(0)
-    starting = false
-    makePoints()
-  }
-
-  if (frameCount % delay == 0) makePoints()
-
-  if (points.length != 0) {
-    for (let i = 0; i < points.length; i++) {
-      points[i].x += (newPoints[i].x - points[i].x) / (delay / speed)
-      points[i].y += (newPoints[i].y - points[i].y) / (delay / speed)
-    }
-  }
-
-  col.r += (newCol.r - col.r) / (delay / colSpeed)
-  col.g += (newCol.g - col.g) / (delay / colSpeed)
-  col.b += (newC
-
   // noStroke()
-  beginShape();
-  for (let i = 0; i < points.length; i++) vertex(points[i].x, points[i].y)
-  endShape(CLOSE);
 
   stroke(0)
   // for (let b = 0; b < points.length; b++) {

@@ -1,35 +1,3 @@
-const pointClouds = [], numPointClouds = 4
-      
-let paused = 0, cellSize = 50
-
-function setup(){
-	createCanvas(windowWidth, windowHeight)
-	pointsRange = {wmin:width/2,wmax:width,hmin:0,hmax:height}
-//	noStroke()
-  	background(0)
-	crazyBatchOfPointClouds(width,height)
-	
-//	for(let i = 0; i < floor(width/cellSize); i++){
-//		for(let j = 0; j < floor(height/cellSize); j++){
-//			pointClouds.push(new PointCloud({delay:10,speed:2,pointCount:5,pointRange:{wmin:i*cellSize,wmax://(i+1)*cellSize,hmin:j*cellSize,hmax:(j+1)*cellSize}}))
-//		}
-//	}
-
-	initPointClouds()
-} //24
-
-function touchStarted(){
-	paused = paused ? 0:1
-}
-
-const initPointClouds = () =>{
-	pointClouds.forEach((pointCloud)=>{
-		pointCloud.nextTransition(pointCloud.newPoints,pointCloud.newCol,
-									pointCloud.pointRange,pointCloud.colRange)
-		pointCloud.nextTransition(pointCloud.newPoints,pointCloud.newCol,
-									pointCloud.pointRange,pointCloud.colRange)
-	})
-}
 
 const crazyBatchOfPointClouds = (width,height) =>{
 	//pointClouds.push(new PointCloud({pointRange:{wmin:0,wmax:width,hmin:0,hmax:height}}))
