@@ -71,7 +71,13 @@ function resetSim() {
 
 function draw() {
   frameRate(20);
-
+  pointClouds.forEach((pointCloud)=>{
+		if(frameCount % pointCloud.delay == 0){
+			pointCloud.nextTransition(pointCloud.newPoints,pointCloud.newCol,
+											pointCloud.pointRange,pointCloud.colRange)
+			}
+		pointCloud.show()
+	})
   if (starting) {
     makePoints()
     background(0)
@@ -90,9 +96,7 @@ function draw() {
 
   col.r += (newCol.r - col.r) / (delay / colSpeed)
   col.g += (newCol.g - col.g) / (delay / colSpeed)
-  col.b += (newCol.b - col.b) / (delay / colSpeed)
-
-  fill(col.r, col.g, col.b)
+  col.b += (newC
 
   // noStroke()
   beginShape();
